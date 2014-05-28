@@ -19,10 +19,14 @@ var server = http.createServer( function( req, res ) {
       break;
 
     case 'GET':
-      todos.forEach( function( todo, index ) {
-        res.write( index + ' - ' + todo + '\n' );
-      });
-      res.end();
+      var body = todos.map( function( todo, index ) {
+        return index + ' - ' + todo ;
+      }).join( '\n' );
+      // Setting Content-Length disables Node chunked encoding.
+      // Less data needs to be transfered this way
+      res.setHeader( 'Content-Length', Buffer.byteLength( body ) );
+      res.setHeader( 'Content-Type', 'text/plain; charset="utf-8"' );
+      res.end( body );
       break;
   }
 });
